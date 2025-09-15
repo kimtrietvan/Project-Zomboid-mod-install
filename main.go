@@ -225,6 +225,18 @@ func steamCmdInstallModWindows(pwd string, modId string) {
 	}
 }
 
+func copyWindows(src string, dest string) error {
+	cmd := exec.Command("xcopy", "/E", "/I", "/Y", src, dest)
+	_, err := cmd.CombinedOutput()
+	return err
+}
+
+func copyLinux(src string, dest string) error {
+	cmd := exec.Command("cp", "-R", src, dest)
+	_, err := cmd.CombinedOutput()
+	return err
+}
+
 func main() {
 	ex, err := os.Executable()
 	if err != nil {
@@ -332,11 +344,15 @@ func main() {
 			}
 
 			modSubFolder := filepath.Join(listModSubFolder, subFolder.Name())
-			cmd := exec.Command("cp", "-R", modSubFolder, zomboidModDir)
-			_, err := cmd.CombinedOutput()
-			if err != nil {
-				fmt.Printf("Error copying mod %s: %v\n", subFolder.Name(), err)
-				return
+			// zomboidModDir
+			if runtime.GOOS == "darwin" {
+				copyLinux(modSubFolder, zomboidModDir)
+			}
+			if runtime.GOOS == "windows" {
+				copyWindows(modSubFolder, zomboidModDir)
+			}
+			if runtime.GOOS == "linux" {
+				copyLinux(modSubFolder, zomboidModDir)
 			}
 
 		}
