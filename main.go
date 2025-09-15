@@ -207,6 +207,17 @@ func steamCmdInstallModMacos(pwd string, modId string) {
 
 func steamCmdInstallModLinux(pwd string, modId string) {
 	cmd := exec.Command("/bin/sh", "-c", fmt.Sprintf("%s +force_install_dir %s +login anonymous +workshop_download_item 108600 %s +quit", filepath.Join(pwd, "steamcmd", "steamcmd.sh"), filepath.Join(pwd, "mods"), modId))
+	// fmt.Println(cmd.String())
+	_, err := cmd.CombinedOutput()
+	if err != nil {
+		fmt.Printf("Error executing command: %v\n", err)
+		return
+	}
+}
+
+func steamCmdInstallModWindows(pwd string, modId string) {
+	cmd := exec.Command(fmt.Sprintf("%s +force_install_dir %s +login anonymous +workshop_download_item 108600 %s +quit", filepath.Join(pwd, "steamcmd", "steamcmd.exe"), filepath.Join(pwd, "mods"), modId))
+	// fmt.Println(cmd.String())
 	_, err := cmd.CombinedOutput()
 	if err != nil {
 		fmt.Printf("Error executing command: %v\n", err)
@@ -274,7 +285,7 @@ func main() {
 			steamCmdInstallModMacos(exPath, mod)
 		}
 		if runtime.GOOS == "windows" {
-			// installSteamCmdWindows(exPath)
+			steamCmdInstallModWindows(exPath, mod)
 		}
 		if runtime.GOOS == "linux" {
 			steamCmdInstallModLinux(exPath, mod)
